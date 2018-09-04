@@ -77,6 +77,9 @@ IF(GIT_FOUND)
     get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 ENDIF()
 
+find_package(PkgConfig)
+pkg_check_modules(RTPROCESS REQUIRED rtprocess>=0.2)
+
 IF(WIN32)
 
     # Windows Section
@@ -181,6 +184,7 @@ SET(LIBS ${LIBS} ${JPEG_LIBRARIES})
 SET(LIBS ${LIBS} ${LCMS2_LIBRARIES})
 SET(LIBS ${LIBS} ${PNG_LIBRARIES})
 SET(LIBS ${LIBS} ${Boost_LIBRARIES})
+SET(LIBS ${LIBS} ${RTPROCESS_LIBRARIES})
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/src/")
 INCLUDE_DIRECTORIES("${CMAKE_BINARY_DIR}/src/")
@@ -283,14 +287,14 @@ IF(APPLE)
     # Link libraries
     TARGET_LINK_LIBRARIES(${LHDR_OSX_EXECUTABLE_TARGET} ${LUMINANCE_MODULES_GUI} ${LIBS})
     TARGET_LINK_LIBRARIES(luminance-hdr-cli             ${LUMINANCE_MODULES_CLI} ${LIBS})
-    
+
     # Rename generated executable binary to luminance-hdr
     add_custom_command(
     TARGET ${LHDR_OSX_EXECUTABLE_TARGET}
     POST_BUILD
     COMMAND mv ${LHDR_OSX_EXECUTABLE_NAME}.app/Contents/MacOS/${LHDR_OSX_EXECUTABLE_NAME} ${LHDR_OSX_EXECUTABLE_NAME}.app/Contents/MacOS/luminance-hdr
     )
-    
+
     # Copy align_image_stack into bundle/Contents/MacOS
     FILE(COPY
     	${CMAKE_SOURCE_DIR}/build_files/platforms/macosx/align_image_stack
