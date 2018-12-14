@@ -202,7 +202,17 @@ float quick_select(float arr[], int n) {
 #undef ELEM_SWAP
 
 float medval(float a[], int length) {
-    return accumulate(a, a + length, 0.f) / (float)length;
+    double sum = 0.0;
+#ifdef _OPENMP
+    #pragma omp parallel for reduction(+:sum)
+#endif
+    for(int i = 0; i < length ; ++i) {
+        sum += a[i];
+    }
+    std::cout << "sum : " << sum << std::endl;
+    std::cout << "acc : " << accumulate(a, a + length, 0.f) << std::endl;
+    return sum / length;
+//    return accumulate(a, a + length, 0.f) / (float)length;
 }
 
 float MSE(float Im1[], float Im2[], int largo, float escala) {
